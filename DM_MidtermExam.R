@@ -17,7 +17,10 @@ library(RSelenium)
 library(rvest)
 library(netstat)
 library(dplyr)
-
+library(tibble)
+library(ggplot2)
+library(grid)
+library(gridExtra)
 
 #####################################################
 ## Q1. Step 1                                      ##
@@ -69,3 +72,28 @@ for (i in 1:num_options) {
 }
 
 View(df)
+
+#####################################################
+## Q1. Step 2                                      ##
+#####################################################
+
+FIFARank <- as_tibble(df)
+FIFARank_In_30 <- FIFARank %>% 
+  filter(RK <= 30) %>% 
+  mutate(Team = substr(Team, 1, nchar(Team) - 3))%>% 
+  select(Team) %>% 
+  count(Team, sort = TRUE) %>% 
+  arrange(desc(n))
+
+colnames(FIFARank_In_30)[2] <- "Count"
+
+dim(FIFARank_In_30)
+View(FIFARank_In_30)
+
+png("Rank.png", width=3*nrow(FIFARank_In_30),height=850*ncol(FIFARank_In_30))
+p <- tableGrob(FIFARank_In_30)
+grid.arrange(top = "Ranking 30 Count", p)
+dev.off()
+
+#[How many countries are there in total in the organized table?]
+paste0(dim(FIFARank_In_30)[1],"팀")
