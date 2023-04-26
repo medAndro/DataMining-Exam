@@ -21,6 +21,8 @@ library(tibble)
 library(ggplot2)
 library(grid)
 library(gridExtra)
+library(lubridate)
+library(gganimate)
 
 #####################################################
 ## Q1. Step 1                                      ##
@@ -71,13 +73,13 @@ for (i in 1:num_options) {
   df <- bind_rows(df, table_data)
 }
 
-View(df)
+FIFARank <- as_tibble(df)
+View(FIFARank)
 
 #####################################################
 ## Q1. Step 2                                      ##
 #####################################################
 
-FIFARank <- as_tibble(df)
 FIFARank_In_30 <- FIFARank %>% 
   filter(RK <= 30) %>% 
   mutate(Team = substr(Team, 1, nchar(Team) - 3))%>% 
@@ -97,3 +99,61 @@ dev.off()
 
 #[How many countries are there in total in the organized table?]
 paste0(dim(FIFARank_In_30)[1],"팀")
+
+
+
+#####################################################
+## Q1. Step 3                                      ##
+#####################################################
+
+FIFARank_In_20 <- FIFARank %>% 
+  filter(RK <= 20) %>% 
+  mutate(Team = substr(Team, 1, nchar(Team) - 3))%>% 
+  mutate(percent_rank = ifelse(RK <= 20, (21 - RK) * 5, NA)) %>% 
+  mutate(Date = unlist(Date)) %>% 
+  mutate(Date = dmy(unlist(Date)))
+
+View(FIFARank_In_20)
+
+
+staticplot = ggplot(FIFARank_In_20, aes(RK, group = Team, 
+                                     fill = as.factor(Team), color = as.factor(Team))) +
+  geom_tile(aes(y = percent_rank/2,
+                height = percent_rank,
+                width = 0.9), alpha = 0.8, color = NA) +
+  geom_text(aes(y = 0, label = paste(Team, " ")), vjust = 0.2, hjust = 1) +
+  geom_text(aes(y=percent_rank,label = as.character(RK), hjust=0)) +
+  coord_flip(clip = "off", expand = FALSE) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_reverse() +
+  guides(color = FALSE, fill = FALSE) +
+  theme(axis.line=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        legend.position="none",
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        panel.grid.major.x = element_line( size=.1, color="grey" ),
+        panel.grid.minor.x = element_line( size=.1, color="grey" ),
+        plot.title=element_text(size=25, hjust=0.5, face="bold", colour="grey", vjust=-1),
+        plot.subtitle=element_text(size=18, hjust=0.5, face="italic", color="grey"),
+        plot.caption =element_text(size=8, hjust=0.5, face="italic", color="grey"),
+        plot.background=element_blank(),
+        plot.margin = margin(2,2, 2, 9, "cm"))
+
+staticplot
+
+anim = staticplot + transition_states(Date, transition_length = 2, state_length = 1) +
+  view_follow(fixed_x = TRUE)  +
+  labs(title = "{closest_state} 피파랭킹",  
+       subtitle  =  "상위 20위")
+
+
+animate(anim, 4860, fps = 15,  width = 1100, height = 1000, 
+        renderer = gifski_renderer("Q1_Step3.gif"))
+
