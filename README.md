@@ -15,11 +15,12 @@ https://www.fifa.com/fifa-world-ranking/men?dateId=id13974
 ### [Sorted table]
 ![Rank](https://user-images.githubusercontent.com/88672474/234602062-6990bd2e-3aab-4f1d-bdc4-260d86690635.png)
 
+### (05/03수정) 정답 78팀인듯... (크롤링시 딜레이 주세요)
 ### [How many countries are there in total in the organized table?]
-77팀
+77팀 
 
 
-### ※Step 3은 틀렸으니 참고만 하세요
+### (05/03수정) ※Step 3은 틀렸으니 참고만 하세요
 ### [Step 3] Interactively visualize the top 20 countries from the collected data through a visualization method that can be expressed by over time. Please compress and submit the visualized file along with this worksheet. (10 Points).
 (주어진 자료로 부터 상위 20개국을 타임 테이블별로 표현할 수 있는 시각화 방법을 통해 인터렉티브 하게 표현하십시오. 시각화 된 파일은 이 문제지와 함께 압축하여 제출하십시오.)
 
